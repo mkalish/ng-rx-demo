@@ -41,11 +41,6 @@ export default class KeyMoveItem {
             .subscribe(function(change){
                 var top = elem[0].getBoundingClientRect().top;
                 elem.css('top', (top + change.change) + 'px');
-            })
-
-            // .subscribe(function(){
-            //     var top = elem[0].getBoundingClientRect().top;
-            //     elem.css('top', (top - 10) + 'px');
-            // });
+            });
     }
 }
