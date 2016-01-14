@@ -1,0 +1,17 @@
+.key_move {
+    height: 200px;
+    width: 50px;
+    'background-color': #000000;
+    border: 1px solid #666666;
+    color: #ffffff;
+    padding: 10px;
+    position: fixed;
+    left: 300px;
+}
+.container {
+    border: 1px solid black;
+    height: 500px;
+    width: 500px;
+    position: absolute;
+    z-index: -1;
+}

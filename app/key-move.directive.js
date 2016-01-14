@@ -1,25 +1,18 @@
 export default class KeyMoveItem {
     constructor(rx) {
         this.restricts = 'E';
-        this.template = '<div>Move me with the keyboard</div>';
+        this.template = '<div class="key_move">Move me with the keyboard</div>';
         this.rx = rx;
+        this.require = '^gameContainer';
     }
 
     compile(tElement) {
         return this.link.bind(this);
     }
 
-    link(scope, elem) {
-        elem.css({
-            height: '200px',
-            width: '50px',
-            'background-color': '#000000',
-            border: '1px solid #666666',
-            color: '#ffffff',
-            padding: '10px',
-            position: 'absolute',
-            left: '300px'
-        });
+    link(scope, elem, attrs, gameContainer) {
+
+
 
         var upKeyDown = this.rx.Observable.fromEvent(document, 'keydown')
             .filter(function(event){
@@ -38,9 +31,17 @@ export default class KeyMoveItem {
             });
 
         upKeyDown.merge(downKeyUp)
-            .subscribe(function(change){
-                var top = elem[0].getBoundingClientRect().top;
-                elem.css('top', (top + change.change) + 'px');
+            .map(function(change){
+                var upperBound = gameContainer.getBounds().top;
+                var top = elem[0].querySelector('div').getBoundingClientRect().top;
+                // if(top + change.change > upperBound) {
+                //     console.log('upper bound');
+                //     return upperBound;
+                // }
+                return top + change.change;
+            })
+            .subscribe(function(newTop){
+                elem[0].querySelector('div').style.top = newTop + 'px';
             });
     }
 }

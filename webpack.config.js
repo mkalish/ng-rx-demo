@@ -9,6 +9,7 @@ module.exports = {
         filename: 'bundle.js',
         path: __dirname + '/build'
     },
+    devtool: 'source-map',
     module: {
         loaders: [
             { test: /\.js$/, loader: 'babel-loader?presets[]=es2015!ng-annotate-loader', exludes: '/node_modules/'}
