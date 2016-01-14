@@ -46,8 +46,7 @@ export default class DraggableItem {
         // Update position
         var subscription = mousedrag.subscribe(function (pos) {
             elem.css({
-                top: pos.top + 'px',
-                left: pos.left + 'px'
+                top: pos.top + 'px'
             });
         });
     }
