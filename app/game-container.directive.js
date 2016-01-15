@@ -5,6 +5,7 @@ export default class GameContainer {
             `<div class="container">
                 <key-move-item></key-move-item>
                 <draggable-item></draggable-item>
+                <ball></ball>
             </div>`
         this.rx = rx;
         this.scope = {};
