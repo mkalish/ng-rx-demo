@@ -16,33 +16,19 @@ export default class GameContainer {
     }
 
     link(scope, elem) {
+        // elem.css({
+        //     border: '1px solid black',
+        //     height: '500px',
+        //     width: '500px',
+        //     position: 'fixed',
+        //     'z-index': -1
+        // });
         elem.css({
-            border: '1px solid black',
-            height: '500px',
-            width: '500px',
-            position: 'fixed',
-            'z-index': -1
+            'margin-top': '10px'
         });
-        scope.boundingRect = elem[0].getBoundingClientRect();
     }
 
     controller($scope) {
-        console.log(this);
-        console.log($scope);
-        console.log($scope.boundingRect);
-        this.getBounds = getBounds;
 
-        /////
-
-        function getBounds() {
-            if($scope.boundingRect) {
-                return {
-                    top: $scope.boundingRect.top,
-                    bottom: $scope.boundingRect.bottom,
-                    left: $scope.boundingRect.left,
-                    right: $scope.boundingRect.right
-                };
-            }
-        }
     }
 }

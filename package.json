@@ -4,7 +4,7 @@
   "description": "small demo app to demonstrate the power RxJS bindings",
   "main": "index.js",
   "scripts": {
-    "start": "node node_modules/.bin/webpack-dev-server --content-base app"
+    "start": "node node_modules/.bin/webpack-dev-server --inline --content-base app"
   },
   "author": "mkalish",
   "license": "MIT",
@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "babel-loader": "^6.2.0",
+    "jquery": "^2.2.0",
     "rx-angular": "^1.0.4",
     "webpack": "^1.12.9",
     "webpack-dev-server": "^1.14.0"

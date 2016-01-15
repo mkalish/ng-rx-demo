@@ -1,3 +1,4 @@
+import jquery from 'jquery';
 import angular from 'angular';
 import rx from 'rx-angular'
 import ShellController from './shell.controller';

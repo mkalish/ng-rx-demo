@@ -24,6 +24,7 @@ export default class DraggableItem {
         var mouseup = this.rx.Observable.fromEvent(elem, 'mouseup');
         var mousemove = this.rx.Observable.fromEvent(document, 'mousemove');
         var mousedown = this.rx.Observable.fromEvent(elem, 'mousedown');
+        var mouseleave = this.rx.Observable.fromEvent(elem, 'mouseleave');
 
         var mousedrag = mousedown.flatMap(function (md) {
 
@@ -40,14 +41,31 @@ export default class DraggableItem {
                         top: mm.pageY - startY
                     };
                 })
-                .takeUntil(mouseup);
+                .map(function(newPos){
+                    var maxTop = elem.parent()[0].getBoundingClientRect().top;
+                    if(newPos.top < maxTop) {
+                        return {
+                            left: newPos.left,
+                            top: maxTop
+                        }
+                    }
+                    return newPos;
+                })
+                .map(function(newPos){
+                    var containerBottom = elem.parent()[0].getBoundingClientRect().bottom;
+                    var elemHeight = elem[0].getBoundingClientRect().height;
+                    if((newPos.top + elemHeight) > containerBottom) {
+                        return containerBottom - elemHeight;
+                    }
+                    return newPos;
+                })
+                .takeUntil(mouseup.merge(mouseleave));
         });
 
         // Update position
         var subscription = mousedrag.subscribe(function (pos) {
             elem.css({
-                top: pos.top + 'px',
-                left: pos.left + 'px'
+                top: pos.top + 'px'
             });
         });
     }
