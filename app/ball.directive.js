@@ -22,62 +22,68 @@ export default class Ball {
 
         let xDirection = 5;
         let yDirection = 5;
+        let container = elem.parent()[0].getBoundingClientRect();
 
 
         var moving = this.rx.Observable
             .interval(100)
             .map(function(){
-                var loc = elem[0].getBoundingClientRect();
+                let box = elem[0].getBoundingClientRect();
                 return {
-                    top: loc.top + yDirection,
-                    left: loc.left + xDirection,
-                    current: loc
+                    top: box.top + yDirection,
+                    left: box.left + xDirection,
+                    width: box.width,
+                    height: box.height
                 };
             })
-            .map(function(posInfo){
-                var containerLoc = elem.parent()[0].getBoundingClientRect();
-                if(posInfo.current.right >= containerLoc.right) {
+            .map(function(location){
+                if(location.left >= container.right - location.width) {
+                    location.left = container.right - location.width;
                     return {
-                        ...posInfo,
+                        ...location,
                         sideHit: 'right'
                     };
                 }
-                return posInfo;
+                return location;
             })
-            .map(function(posInfo){
-                var containerLoc = elem.parent()[0].getBoundingClientRect();
-                if(posInfo.current.left <= containerLoc.left) {
+            .map(function(location){
+                if(location.left <= container.left) {
+                    location.left = container.left;
                     return {
-                        ...posInfo,
+                        ...location,
                         sideHit: 'left'
                     };
                 }
-                return posInfo;
+                return location;
             })
-            .map(function(posInfo){
-                var containerLoc = elem.parent()[0].getBoundingClientRect();
-                if(posInfo.current.top <= containerLoc.top) {
+            .map(function(location){
+                if(location.top <= container.top) {
+                    location.top = container.top;
                     return {
-                        ...posInfo,
+                        ...location,
                         sideHit: 'top'
                     };
                 }
-                return posInfo;
+                return location;
             })
-            .map(function(posInfo){
-                var containerLoc = elem.parent()[0].getBoundingClientRect();
-                if(posInfo.current.bottom >= containerLoc.bottom) {
+            .map(function(location){
+                if(location.top >= container.bottom - location.height) {
+                    location.top = container.bottom - location.height;
                     return {
-                        ...posInfo,
+                        ...location,
                         sideHit: 'bottom'
                     };
                 }
-                return posInfo;
+                return location;
             })
 
 
-        moving.subscribe(function(newPos){
-            switch(newPos.sideHit) {
+        moving.subscribe(function(location){
+            elem.css({
+                top: location.top + 'px',
+                left: location.left + 'px'
+            });
+            switch(location.sideHit) {
                 case 'top':
                     yDirection = -1 * yDirection;
                     break;
@@ -91,10 +97,6 @@ export default class Ball {
                     xDirection = -1 * xDirection;
                     break;
             }
-            elem.css({
-                top: newPos.top + 'px',
-                left: newPos.left + 'px'
-            });
         });
     }
 }
