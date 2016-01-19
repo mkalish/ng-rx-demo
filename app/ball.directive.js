@@ -1,7 +1,8 @@
 export default class Ball {
     constructor(rx) {
         this.restrict = 'E';
-        this.template = '<div></div>'
+        this.template = '<div></div>';
+        this.require = '^gameContainer';
         this.rx = rx;
     }
 
@@ -9,7 +10,7 @@ export default class Ball {
         return this.link.bind(this);
     }
 
-    link(scope, elem) {
+    link(scope, elem, attrs, gameController) {
         elem.css({
             height: '50px',
             width: '50px',
@@ -75,7 +76,9 @@ export default class Ball {
                     };
                 }
                 return location;
-            })
+            });
+
+        gameController.registerBall(moving);
 
 
         moving.subscribe(function(location){

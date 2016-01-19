@@ -2,14 +2,19 @@ export default class GameContainer {
     constructor(rx) {
         this.restrict = 'E';
         this.template =
-            `<div class="container">
-                <key-move-item></key-move-item>
-                <draggable-item></draggable-item>
-                <ball></ball>
+            `<div>
+                <div>
+                    <span>Left Score: {{leftScore}}</span>
+                    <span>Right Score: {{rightScore}}</span>
+                </div>
+                <div class="container">
+                    <key-move-item></key-move-item>
+                    <draggable-item></draggable-item>
+                    <ball></ball>
+                </div>
             </div>`
         this.rx = rx;
         this.scope = {};
-        this.controllerAs = 'vm';
     }
 
     compile(tElement) {
@@ -17,19 +22,35 @@ export default class GameContainer {
     }
 
     link(scope, elem) {
-        // elem.css({
-        //     border: '1px solid black',
-        //     height: '500px',
-        //     width: '500px',
-        //     position: 'fixed',
-        //     'z-index': -1
-        // });
         elem.css({
             'margin-top': '10px'
         });
+        scope.leftScore = 0;
+        scope.rightScore = 0;
     }
 
     controller($scope) {
+        this.registerBall = registerBallStream;
 
+        ////
+
+        function registerBallStream(ballStream) {
+            var score = ballStream
+                .filter(function(info){
+                    return info.sideHit === 'left' || info.sideHit === 'right';
+                })
+                .map(function(info){
+                    return info.sideHit;
+                });
+            score.safeApply($scope,
+                function(side){
+                    if(side === 'left') {
+                        $scope.leftScore++;
+                    } else {
+                        $scope.rightScore++;
+                    }
+                }
+            ).subscribe();
+        }
     }
 }
