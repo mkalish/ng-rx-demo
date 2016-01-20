@@ -29,13 +29,13 @@ export default class DraggableItem {
         let mouseleave = this.rx.Observable.fromEvent(elem, 'mouseleave');
 
         // This observable emits observables that will calculate where the drag has moved to
-        let mousedrag = mousedown.flatMap(function (md) {
+        let mousedrag = mousedown.flatMap((md) => {
 
             // calculate offsets when mouse down
             var startY = md.offsetY;
 
             // Calculate delta with mousemove until mouseup
-            return mousemove.map(function (mm) {
+            return mousemove.map((mm) => {
                     mm.preventDefault();
                     return mm.pageY - startY;
                 })
@@ -45,7 +45,7 @@ export default class DraggableItem {
         });
 
         // Update position
-        mousedrag.subscribe(function (newTop) {
+        mousedrag.subscribe((newTop) => {
             // Since this is pong we only care about moving the paddle up and down
             elem.css({
                 top: newTop + 'px'
