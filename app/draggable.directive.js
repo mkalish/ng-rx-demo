@@ -14,13 +14,13 @@ export default class DraggableItem {
         elem.css({
             height: '200px',
             width: '25px',
-            'background-color': '#000000',
+            'background-color': '#FFFFFF',
             border: '1px solid #666666',
             color: '#ffffff',
             padding: '10px',
             position: 'absolute',
             cursor: 'move',
-            left: '11px'
+            left: '311px'
         });
 
         const container = elem.parent()[0].getBoundingClientRect();
