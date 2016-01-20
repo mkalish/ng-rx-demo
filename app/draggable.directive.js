@@ -32,16 +32,12 @@ export default class DraggableItem {
         let mousedrag = mousedown.flatMap(function (md) {
 
             // calculate offsets when mouse down
-            var startX = md.offsetX,
-                startY = md.offsetY;
+            var startX = md.offsetX;
 
             // Calculate delta with mousemove until mouseup
             return mousemove.map(function (mm) {
                     mm.preventDefault();
-
-                    return {
-                        top: mm.pageY - startY
-                    };
+                    return mm.pageY - startY;
                 })
                 // Once the mouse has left the draggable or a mouse up event has been emitted
                 // stop moving the draggable container
@@ -49,10 +45,10 @@ export default class DraggableItem {
         });
 
         // Update position
-        mousedrag.subscribe(function (pos) {
+        mousedrag.subscribe(function (newTop) {
             // Since this is pong we only care about moving the paddle up and down
             elem.css({
-                top: pos.top + 'px'
+                top: newTop + 'px'
             });
         });
     }
