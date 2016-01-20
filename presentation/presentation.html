@@ -39,7 +39,7 @@ class: center, middle
 3. Properties of Observables
 4. Angular and RxJS
 5. Code Demo
-6. Other RxJS Topics to explore
+6. Why RxJS?
 7. Alternatives
 
 ---
@@ -52,7 +52,9 @@ class: center, middle
 # What are Reactive Extensions?
 
 1. A new hair product
+
 2. The latest SNL sketch
+
 3. A new programming paradigm
 
 ---
@@ -74,8 +76,13 @@ It is a programming paradigm, but it's actually not that new
 # The project was open sourced in 2012
 
 - ## A lot was included on top of the .NET version.  Microsoft also released RxJS and Rx++
-- ## Since then versions have been released for Ruby and Python
+- ## Since then versions have been released for Java, Ruby and Python
 - ## [Home of RX](https://rx.codeplex.com/)
+
+---
+
+# Why now?
+- Properly handling asynchronous flows is a major key to responsive and clean UIs
 
 ---
 
@@ -109,7 +116,7 @@ At its core, Reactive Extensions is an implementation of the *Observer pattern* 
 
 class: center, middle
 
-# __WARNING: THE FOLLOWING CODE SAMPLES INCLUDE ES2015__
+# __WARNING: THE FOLLOWING CODE SAMPLES INCLUDE ES2015 AND BEYOND__
 
 ---
 
@@ -140,10 +147,32 @@ class: center, middle
     // 3
     // DONE
 ```
+---
+
+# Creating an observable
+```javascript
+    Rx.Observable.create((observer) => {
+        var x = 0;
+        while(x <= 2) {
+            observer.onNext(x);
+            x++;
+        }
+        observer.onCompleted();
+    })
+    .subscribe(
+        (val) => {console.log(val)},
+        null
+        () => {console.log('COMPLETE')}
+    );
+    // 0
+    // 1
+    // 2
+    // COMPLETE
+```
 
 ---
 
-# Streams are lazy
+# Streams are lazy (normally)
 
 ```javascript
     let interval = Rx.Observable.interval(500)
@@ -170,35 +199,26 @@ class: center, middle
 
 # Streams are immutable
 ```javascript
-    let observable = Rx.Observable.from([0, 1, 2, 3]);
-    let filteredObservable = observable.filter((value) => { return value !== 2; });
+    let observable = Rx.Observable.from([0, 1, 2]);
+    let filteredObservable = observable.filter((value) => { return value !== 1; });
 
     observable.subscribe(
-        (value) => {
-            console.log(value);
-        },
+        (value) => { console.log(value); },
         null,
         () => {
             console.log('COMPLETE');
         }
     );
     filteredObservable.subscribe(
-            (value) => {
-                console.log(value);
-            },
+            (value) => { console.log(value); },
             null,
-            () => {
-                console.log('COMPLETE');
-            }
+            () => { console.log('COMPLETE'); }
         );
-
     // 0
     // 0
-    // 1
     // 1
     // 2
-    // 3
-    // 3
+    // 2
     // COMPLETE
     // COMPLETE
 ```
@@ -247,7 +267,7 @@ class: center, middle
                     fetch(`https://api.github.com/repos/Reactive-Extensions/rxjs/issues?state=${state}`)
                 );
         })
-        .flatMap((response) => {
+        .flatMapLatest((response) => {
             return response.data;
         });
 
@@ -273,6 +293,7 @@ class: center, middle
 
 # Angular specific methods on observables
 - safeApply : makes sure $scope.$apply is called after function is finished
+
 - safeDigest : makes sure $scope.$digest is called after function is finished
 
 ```javascript
@@ -309,10 +330,19 @@ Lets build a simple (aka barely functional) game of pong
 
 ---
 
-# Other RxJS topics to explore
-- ## The role that schedulers play in the timing of emitted events
-- ## Dispoing of subscriptions to observables
-- ## Rx Subjects
+# Why RxJS?
+- Language agnostic (same thought process transfers ro RxJava and Rx++)
+
+- Works gracefully with the DOM
+
+- Pipeline is composable and therefore very testable
+
+- Supports ES2015 specs including Promises and Generators
+
+- Schedulers provide a greater degree of flexiblity in how you handle concurrency
+
+- Concise handling of observable cleanup
+
 
 ---
 
@@ -328,6 +358,8 @@ Lets build a simple (aka barely functional) game of pong
 4. [Reactive Extension Github Page](https://github.com/Reactive-Extensions)
 5. [Presentation/Demo Code](https://github.com/mkalish/ng-rx-demo)
 6. [Rx Marbles](http://rxmarbles.com/)
+7. [Why Rx](https://github.com/Reactive-Extensions/RxJS/blob/master/doc/mapping/highland/whyrx.md)
+8. [Hot vs. Cold Observables](https://channel9.msdn.com/Blogs/J.Van.Gogh/Rx-API-in-depth-Hot-and-Cold-observables)
 
 ---
 
