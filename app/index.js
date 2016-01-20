@@ -13,7 +13,7 @@ angular.module('ng-rx-pong', ['rx']);
 angular.module('ng-rx-pong').controller('ShellController', ShellController);
 angular.module('ng-rx-pong').directive('draggableItem', ['rx', (rx) => new DraggableItem(rx)]);
 angular.module('ng-rx-pong').directive('keyMoveItem', ['rx', (rx) => new KeyMoveItem(rx)]);
-angular.module('ng-rx-pong').directive('gameContainer', () => new GameContainer());
+angular.module('ng-rx-pong').directive('gameContainer', ['rx', (rx) => new GameContainer(rx)]);
 angular.module('ng-rx-pong').directive('ball', (rx) => new Ball(rx));
 
 

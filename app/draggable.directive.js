@@ -1,26 +1,29 @@
 export default class DraggableItem {
     constructor(rx) {
         this.restrict = 'E';
-        this.template = '<div>Drag Me</div>';
+        this.template = '<div></div>';
         this.rx = rx;
+        this.require = '^gameContainer';
     }
 
     compile(tElement) {
         return this.link.bind(this);
     }
 
-    link(scope, elem) {
+    link(scope, elem, attrs, gameContainer) {
         elem.css({
             height: '200px',
-            width: '50px',
+            width: '25px',
             'background-color': '#000000',
             border: '1px solid #666666',
             color: '#ffffff',
             padding: '10px',
             position: 'absolute',
-            cursor: 'move'
+            cursor: 'move',
+            left: '11px'
         });
 
+        const elemHeight = elem[0].getBoundingClientRect().height;
         var mouseup = this.rx.Observable.fromEvent(elem, 'mouseup');
         var mousemove = this.rx.Observable.fromEvent(document, 'mousemove');
         var mousedown = this.rx.Observable.fromEvent(elem, 'mousedown');
@@ -45,27 +48,35 @@ export default class DraggableItem {
                     var maxTop = elem.parent()[0].getBoundingClientRect().top;
                     if(newPos.top < maxTop) {
                         return {
-                            left: newPos.left,
-                            top: maxTop
+                            maxTop
                         }
                     }
-                    return newPos;
+                    return newPos.top;
                 })
-                .map(function(newPos){
+                .map(function(newTop){
                     var containerBottom = elem.parent()[0].getBoundingClientRect().bottom;
-                    var elemHeight = elem[0].getBoundingClientRect().height;
-                    if((newPos.top + elemHeight) > containerBottom) {
+                    if((newTop+ elemHeight) > containerBottom) {
                         return containerBottom - elemHeight;
                     }
-                    return newPos;
+                    return newTop;
                 })
                 .takeUntil(mouseup.merge(mouseleave));
         });
 
+        let paddlePos = mousedrag
+            .map((newTop) => {
+                return {
+                    top: newTop,
+                    bottom: newTop + elemHeight
+                };
+            })
+
+        gameContainer.registerPaddle(paddlePos, 'left', elem[0].getBoundingClientRect())
+
         // Update position
-        var subscription = mousedrag.subscribe(function (pos) {
+        mousedrag.subscribe(function (newTop) {
             elem.css({
-                top: pos.top + 'px'
+                top: newTop + 'px'
             });
         });
     }

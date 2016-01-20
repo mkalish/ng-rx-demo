@@ -4,8 +4,9 @@ export default class GameContainer {
         this.template =
             `<div>
                 <div>
-                    <span>Left Score: {{leftScore}}</span>
-                    <span>Right Score: {{rightScore}}</span>
+                    <span>Left Score: {{vm.score.left}}</span>
+                    <span>Right Score: {{vm.score.right}}</span>
+                    <button ng-click="vm.startGame()">Start Game</button>
                 </div>
                 <div class="container">
                     <key-move-item></key-move-item>
@@ -15,6 +16,8 @@ export default class GameContainer {
             </div>`
         this.rx = rx;
         this.scope = {};
+        this.bindToController = true;
+        this.controllerAs = 'vm';
     }
 
     compile(tElement) {
@@ -25,32 +28,66 @@ export default class GameContainer {
         elem.css({
             'margin-top': '10px'
         });
-        scope.leftScore = 0;
-        scope.rightScore = 0;
+        scope.rx = this.rx;
     }
 
-    controller($scope) {
-        this.registerBall = registerBallStream;
+    controller($scope, rx) {
+        var vm = this;
+        this.score = {
+            left: 0,
+            right: 0
+        }
+        this.startGame = startGame;
+        this.registerBall = registerBall;
+        this.registerPaddle = registerPaddle;
+        this.paddles = [];
 
         ////
 
-        function registerBallStream(ballStream) {
-            var score = ballStream
-                .filter(function(info){
-                    return info.sideHit === 'left' || info.sideHit === 'right';
-                })
-                .map(function(info){
-                    return info.sideHit;
-                });
-            score.safeApply($scope,
-                function(side){
-                    if(side === 'left') {
-                        $scope.leftScore++;
-                    } else {
-                        $scope.rightScore++;
-                    }
+        function startGame() {
+            let game = rx.Observable.combineLatest(
+                ...this.paddles,
+                this.ballStream
+            )
+            .map((gameState) => {
+                if(gameState[2].sideHit === 'left' && !isPaddleHit(gameState[1], gameState[2])) {
+                    return {
+                        left: vm.score.left,
+                        right: ++vm.score.right
+                    };
+                } else if(gameState[2].sideHit === 'right' && !isPaddleHit(gameState[0], gameState[2])) {
+                    return {
+                        left: ++vm.score.left,
+                        right: vm.score.right
+                    };
+                } else {
+                    return vm.score;
                 }
-            ).subscribe();
+            });
+            $scope
+                .$digestObservables({'vm.score': game})
+                .subscribe();
+        }
+
+        function registerPaddle(paddleStream, side, startingPosition) {
+            let paddle = paddleStream.
+                map((location) => {
+                    return {
+                        ...location,
+                        side: 'left'
+                    };
+                })
+                .startWith(startingPosition);
+            this.paddles.push(paddle);
+        }
+
+        function registerBall(ballStream) {
+            this.ballStream = ballStream;
+        }
+
+        function isPaddleHit(paddlePos, ballPos) {
+            let ballBottom = ballPos.top + ballPos.height;
+            return ballBottom < paddlePos.bottom && ballPos.top > paddlePos.top;
         }
     }
 }

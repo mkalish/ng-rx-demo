@@ -1,7 +1,7 @@
 export default class KeyMoveItem {
     constructor(rx) {
         this.restricts = 'E';
-        this.template = '<div class="key_move">Move me with the keyboard</div>';
+        this.template = '<div></div>';
         this.rx = rx;
         this.require = '^gameContainer';
     }
@@ -13,14 +13,16 @@ export default class KeyMoveItem {
     link(scope, elem, attrs, gameContainer) {
         elem.css({
             height: '200px',
-            width: '50px',
+            width: '25px',
             'background-color': '#000000',
             border: '1px solid #666666',
             color: '#ffffff',
             padding: '10px',
             position: 'absolute',
-            left: '550px'
+            left: '810px'
         });
+
+        const elemHeight = elem[0].getBoundingClientRect().height;
 
         var upKeyDown = this.rx.Observable.fromEvent(document, 'keydown')
             .filter(function(event){
@@ -38,7 +40,7 @@ export default class KeyMoveItem {
                 return 10
             });
 
-        upKeyDown.merge(downKeyUp)
+        let arrowKeyMovement = upKeyDown.merge(downKeyUp)
             .map(function(change){
                 var newTop = elem[0].getBoundingClientRect().top + change;
                 var containerTop = elem.parent()[0].getBoundingClientRect().top;
@@ -49,16 +51,26 @@ export default class KeyMoveItem {
             })
             .map(function(newTop){
                 var containerBottom = elem.parent()[0].getBoundingClientRect().bottom;
-                var elemHeight = elem[0].getBoundingClientRect().height;
                 if((newTop + elemHeight) > containerBottom) {
                     return containerBottom - elemHeight;
                 }
                 return newTop;
-            })
-            .subscribe(function(newTop){
+            });
+
+            arrowKeyMovement.subscribe(function(newTop){
                 elem.css({
                     top: newTop + 'px'
                 });
             });
+
+        let paddlePosition = arrowKeyMovement
+            .map((newTop) => {
+                return {
+                    top: newTop,
+                    bottom: newTop + elemHeight
+                }
+            });
+
+        gameContainer.registerPaddle(paddlePosition, 'right');
     }
 }
