@@ -12,7 +12,15 @@ module.exports = {
     devtool: 'source-map',
     module: {
         loaders: [
-            { test: /\.js$/, loader: 'babel-loader?presets[]=es2015!ng-annotate-loader', exludes: '/node_modules/'}
+             {
+                test: /\.jsx?$/,
+                exclude: /(node_modules)/,
+                loader: 'babel',
+                query: {
+                  presets: ['es2015'],
+                  plugins: ['syntax-object-rest-spread', "transform-object-rest-spread"]
+                }
+              }
         ]
     },
     plugins: [
