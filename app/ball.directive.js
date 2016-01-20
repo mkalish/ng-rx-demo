@@ -24,6 +24,7 @@ export default class Ball {
         let xDirection = 5;
         let yDirection = 5;
         let container = elem.parent()[0].getBoundingClientRect();
+        // Create an observable that emits when the 'GAME_END' event is broadcasted to the scope
         let gameEnd = scope.$eventToObservable('GAME_END');
 
 
@@ -78,9 +79,12 @@ export default class Ball {
                 }
                 return location;
             })
+            // When the game is over, the ball should not be updated
             .takeUntil(gameEnd);
 
         gameController.registerBall(moving, () =>{
+            // We really only want the ball the move when the game has started
+            // and since observables are lazy we'll subscribe when the game starts
             moving.subscribe(function(location){
                 elem.css({
                     top: location.top + 'px',
