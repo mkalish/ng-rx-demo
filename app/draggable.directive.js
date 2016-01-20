@@ -21,33 +21,34 @@ export default class DraggableItem {
             cursor: 'move'
         });
 
-        var mouseup = this.rx.Observable.fromEvent(elem, 'mouseup');
-        var mousemove = this.rx.Observable.fromEvent(document, 'mousemove');
-        var mousedown = this.rx.Observable.fromEvent(elem, 'mousedown');
-        var mouseleave = this.rx.Observable.fromEvent(elem, 'mouseleave');
 
-        var mousedrag = mousedown.flatMap(function (md) {
+        // Observables of all the DOM events we care about while dragging
+        let mouseup = this.rx.Observable.fromEvent(elem, 'mouseup');
+        let mousemove = this.rx.Observable.fromEvent(document, 'mousemove');
+        let mousedown = this.rx.Observable.fromEvent(elem, 'mousedown');
+        let mouseleave = this.rx.Observable.fromEvent(elem, 'mouseleave');
+
+        // This observable emits observables that will calculate where the drag has moved to
+        let mousedrag = mousedown.flatMap(function (md) {
 
             // calculate offsets when mouse down
-            var startX = md.offsetX,
-                startY = md.offsetY;
+            var startX = md.offsetX;
 
             // Calculate delta with mousemove until mouseup
             return mousemove.map(function (mm) {
                     mm.preventDefault();
-
-                    return {
-                        left: mm.pageX - startX,
-                        top: mm.pageY - startY
-                    };
+                    return mm.pageY - startY;
                 })
+                // Once the mouse has left the draggable or a mouse up event has been emitted
+                // stop moving the draggable container
                 .takeUntil(mouseup.merge(mouseleave));
         });
 
         // Update position
-        var subscription = mousedrag.subscribe(function (pos) {
+        mousedrag.subscribe(function (newTop) {
+            // Since this is pong we only care about moving the paddle up and down
             elem.css({
-                top: pos.top + 'px'
+                top: newTop + 'px'
             });
         });
     }
