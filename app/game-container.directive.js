@@ -42,6 +42,10 @@ export default class GameContainer {
                 .map(function(info){
                     return info.sideHit;
                 });
+
+            // This is one way of tieing the observable back to angular
+            // This is done so that a digest cycle is performed after
+            // every value emitted
             score.safeApply($scope,
                 function(side){
                     if(side === 'left') {
