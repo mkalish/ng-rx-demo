@@ -3,16 +3,19 @@ export default class GameContainer {
         this.restrict = 'E';
         this.template =
             `<div>
-                <div>
-                    <span>Left Score: {{vm.score.left}}</span>
-                    <span>Right Score: {{vm.score.right}}</span>
+                <div class="game_controls">
                     <button ng-hide="vm.started"  ng-click="vm.startGame()">Start Game</button>
                     <button ng-show="vm.started" ng-click="vm.stopGame()">Stop Game</button>
+                </div>
+                <div class="game_controls">
+                    <span>Left Score: {{vm.score.left}}</span>
+                    <span>Right Score: {{vm.score.right}}</span>
                 </div>
                 <div class="container">
                     <key-move-item></key-move-item>
                     <draggable-item></draggable-item>
                     <ball></ball>
+                    <div class="divider"></div>
                 </div>
             </div>`
         this.rx = rx;

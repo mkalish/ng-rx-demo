@@ -14,10 +14,10 @@ export default class Ball {
         elem.css({
             height: '50px',
             width: '50px',
-            'background-color' : '#000000',
+            'background-color' : '#FFFFFF',
             'border-radius': '100%',
-            left: '275px',
-            top: '150px',
+            left: '725px',
+            top: '350px',
             position: 'absolute'
         });
 

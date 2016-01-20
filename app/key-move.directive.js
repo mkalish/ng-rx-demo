@@ -14,12 +14,12 @@ export default class KeyMoveItem {
         elem.css({
             height: '200px',
             width: '25px',
-            'background-color': '#000000',
+            'background-color': '#FFFFFF',
             border: '1px solid #666666',
             color: '#ffffff',
             padding: '10px',
             position: 'absolute',
-            left: '810px'
+            left: '1110px'
         });
 
         const container = elem.parent()[0].getBoundingClientRect();
