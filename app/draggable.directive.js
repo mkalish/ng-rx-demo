@@ -32,7 +32,7 @@ export default class DraggableItem {
         let mousedrag = mousedown.flatMap(function (md) {
 
             // calculate offsets when mouse down
-            var startX = md.offsetX;
+            var startY = md.offsetY;
 
             // Calculate delta with mousemove until mouseup
             return mousemove.map(function (mm) {
