@@ -23,43 +23,44 @@ export default class DraggableItem {
             left: '11px'
         });
 
+        const container = elem.parent()[0].getBoundingClientRect();
         const elemHeight = elem[0].getBoundingClientRect().height;
-        var mouseup = this.rx.Observable.fromEvent(elem, 'mouseup');
-        var mousemove = this.rx.Observable.fromEvent(document, 'mousemove');
-        var mousedown = this.rx.Observable.fromEvent(elem, 'mousedown');
-        var mouseleave = this.rx.Observable.fromEvent(elem, 'mouseleave');
 
-        var mousedrag = mousedown.flatMap(function (md) {
+
+        // Observables of all the DOM events we care about while dragging
+        let mouseup = this.rx.Observable.fromEvent(elem, 'mouseup');
+        let mousemove = this.rx.Observable.fromEvent(document, 'mousemove');
+        let mousedown = this.rx.Observable.fromEvent(elem, 'mousedown');
+        let mouseleave = this.rx.Observable.fromEvent(elem, 'mouseleave');
+
+        // This observable emits observables that will calculate where the drag has moved to
+        let mousedrag = mousedown.flatMap((md) => {
 
             // calculate offsets when mouse down
-            var startX = md.offsetX,
-                startY = md.offsetY;
+            var startY = md.offsetY;
 
             // Calculate delta with mousemove until mouseup
-            return mousemove.map(function (mm) {
+            return mousemove.map((mm) => {
                     mm.preventDefault();
-
-                    return {
-                        left: mm.pageX - startX,
-                        top: mm.pageY - startY
-                    };
+                    return mm.pageY - startY;
                 })
-                .map(function(newPos){
-                    var maxTop = elem.parent()[0].getBoundingClientRect().top;
-                    if(newPos.top < maxTop) {
-                        return {
-                            maxTop
-                        }
-                    }
-                    return newPos.top;
-                })
-                .map(function(newTop){
-                    var containerBottom = elem.parent()[0].getBoundingClientRect().bottom;
-                    if((newTop+ elemHeight) > containerBottom) {
-                        return containerBottom - elemHeight;
+                // No previous or future steps need to be modified
+                // Just check if the newTop is in bounds and if not
+                // return the container top or bottom
+                .map((newTop) => {
+                    if(newTop < container.top) {
+                        return container.top;
                     }
                     return newTop;
                 })
+                .map((newTop) => {
+                    if((newTop + elemHeight) > container.bottom) {
+                        return container.bottom - elemHeight;
+                    }
+                    return newTop;
+                })
+                // Once the mouse has left the draggable or a mouse up event has been emitted
+                // stop moving the draggable container
                 .takeUntil(mouseup.merge(mouseleave));
         });
 
@@ -74,7 +75,8 @@ export default class DraggableItem {
         gameContainer.registerPaddle(paddlePos, 'left', elem[0].getBoundingClientRect())
 
         // Update position
-        mousedrag.subscribe(function (newTop) {
+        mousedrag.subscribe((newTop) => {
+            // Since this is pong we only care about moving the paddle up and down
             elem.css({
                 top: newTop + 'px'
             });

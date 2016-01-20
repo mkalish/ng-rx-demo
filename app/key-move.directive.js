@@ -22,9 +22,11 @@ export default class KeyMoveItem {
             left: '810px'
         });
 
+        const container = elem.parent()[0].getBoundingClientRect();
         const elemHeight = elem[0].getBoundingClientRect().height;
 
-        var upKeyDown = this.rx.Observable.fromEvent(document, 'keydown')
+
+        let upKeyDown = this.rx.Observable.fromEvent(document, 'keydown')
             .filter(function(event){
                 return event.keyCode === 38;
             })
@@ -32,7 +34,7 @@ export default class KeyMoveItem {
                 return -10
             });
 
-        var downKeyUp = this.rx.Observable.fromEvent(document, 'keydown')
+        let downKeyUp = this.rx.Observable.fromEvent(document, 'keydown')
             .filter(function(event){
                 return event.keyCode === 40;
             })
@@ -41,18 +43,22 @@ export default class KeyMoveItem {
             });
 
         let arrowKeyMovement = upKeyDown.merge(downKeyUp)
-            .map(function(change){
-                var newTop = elem[0].getBoundingClientRect().top + change;
-                var containerTop = elem.parent()[0].getBoundingClientRect().top;
-                if(newTop < containerTop) {
-                    return containerTop;
+            .map((change) => {
+                let currentTop = elem[0].getBoundingClientRect().top;
+                return currentTop + change;
+            })
+            // Nothing needs to be change in any of previous pipeline steps
+            // Two new filters need to be added to keep the paddle within the
+            // container
+            .map((newTop) => {
+                if(newTop < container.top) {
+                    return container.top;
                 }
                 return newTop;
             })
-            .map(function(newTop){
-                var containerBottom = elem.parent()[0].getBoundingClientRect().bottom;
-                if((newTop + elemHeight) > containerBottom) {
-                    return containerBottom - elemHeight;
+            .map((newTop) => {
+                if((newTop + elemHeight) > container.bottom) {
+                    return container.bottom - elemHeight;
                 }
                 return newTop;
             });
