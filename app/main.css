@@ -2,4 +2,6 @@
     border: 1px solid black;
     height: 500px;
     z-index: -1;
+    width: 750px;
+    margin-left: 50px
 }

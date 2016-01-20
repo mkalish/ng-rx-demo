@@ -16,13 +16,6 @@ export default class GameContainer {
     }
 
     link(scope, elem) {
-        // elem.css({
-        //     border: '1px solid black',
-        //     height: '500px',
-        //     width: '500px',
-        //     position: 'fixed',
-        //     'z-index': -1
-        // });
         elem.css({
             'margin-top': '10px'
         });
