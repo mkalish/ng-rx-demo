@@ -1,7 +1,7 @@
 export default class DraggableItem {
     constructor(rx) {
         this.restrict = 'E';
-        this.template = '<div>Drag Me</div>';
+        this.template = '<div></div>';
         this.rx = rx;
     }
 
@@ -12,13 +12,14 @@ export default class DraggableItem {
     link(scope, elem) {
         elem.css({
             height: '200px',
-            width: '50px',
+            width: '25px',
             'background-color': '#000000',
             border: '1px solid #666666',
             color: '#ffffff',
             padding: '10px',
             position: 'absolute',
-            cursor: 'move'
+            cursor: 'move',
+            left: '11px'
         });
 
         var mouseup = this.rx.Observable.fromEvent(elem, 'mouseup');

@@ -1,7 +1,7 @@
 export default class KeyMoveItem {
     constructor(rx) {
         this.restricts = 'E';
-        this.template = '<div class="key_move">Move me with the keyboard</div>';
+        this.template = '<div></div>';
         this.rx = rx;
         this.require = '^gameContainer';
     }
@@ -13,13 +13,13 @@ export default class KeyMoveItem {
     link(scope, elem, attrs, gameContainer) {
         elem.css({
             height: '200px',
-            width: '50px',
+            width: '25px',
             'background-color': '#000000',
             border: '1px solid #666666',
             color: '#ffffff',
             padding: '10px',
             position: 'absolute',
-            left: '550px'
+            left: '810px'
         });
 
         var upKeyDown = this.rx.Observable.fromEvent(document, 'keydown')
