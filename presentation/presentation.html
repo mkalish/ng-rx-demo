@@ -35,17 +35,26 @@ class: center, middle
 # Agenda
 
 1. Who am I?
+
 2. What are Reactive Extensions?
+
 3. Properties of Observables
+
 4. Angular and RxJS
+
 5. Code Demo
+
 6. Why RxJS?
+
 7. Alternatives
 
 ---
 
 # Who am I?
-- Senior software engineer at Learning Objects building technology solutions to move education forward
+
+- Senior software engineer at Learning Objects
+
+- We build cool things to help transform the eduction sector
 
 ---
 
@@ -58,6 +67,11 @@ class: center, middle
 3. A new programming paradigm
 
 ---
+class: center
+
+![Image of Yaktocat](http://www.dfwanimalrescue.com/wp-content/uploads/2011/11/funny-pictures-extensions-worth-every-penny.jpg)
+
+---
 
 # None of the above (sort of)!
 
@@ -67,7 +81,7 @@ It is a programming paradigm, but it's actually not that new
 
 # Microsoft first announced Reactive extensions for .NET and Silverlight in 2009
 
-> The Rx library provides API create instances of these interfaces from scratch, convert existing asynchronous patterns such as events to these interfaces, query, transform and merge observables. All together creating a new powerful way of writing asynchronous applications.
+> At the heart of the library are two new interfaces `IObservable<T> and IObserver<T>`. The Rx library provides API create instances of these interfaces from scratch, convert existing asynchronous patterns such as events to these interfaces, query, transform and merge observables. All together creating a new powerful way of writing asynchronous applications.
 
 [Introduction Post](http://blogs.msdn.com/b/rxteam/archive/2009/11/17/announcing-reactive-extensions-rx-for-net-silverlight.aspx)
 
@@ -82,7 +96,7 @@ It is a programming paradigm, but it's actually not that new
 ---
 
 # Why now?
-- Properly handling asynchronous flows is a major key to responsive and clean UIs
+## Properly handling asynchronous flows is a major key to responsive and clean UIs
 
 ---
 
@@ -100,9 +114,9 @@ At its core, Reactive Extensions is an implementation of the *Observer pattern* 
 
 # Extension of observer pattern
 - ## Two key enhancements
-    1. Ability for observer to signal when there is no more data
-    2. Ability for observer to signal when an error has ocurred
-- ## All updates are pushed rather than pulled
+    1. Ability for an observer to signal when there is no more data (completed)
+    2. Ability for an observer to signal when an error has ocurred
+- ## All updates are pushed rather than pulled (different from arrays)
 
 ---
 
@@ -233,7 +247,7 @@ class: center, middle
     let merged = zeroToFour
         .merge(abc)
         .filter((value) => {
-            return value !== 2 || value !== 'c';
+            return value !== 2 && value !== 'c';
         })
         .subscribe(
             (value) =>{
@@ -280,8 +294,9 @@ class: center, middle
 
 # Angular and RxJS
 - ## Very small API footprint
-- ## Most of the work is handled by injectable rx service
-- ## The $scope integration works, but its not necessarily concise
+- ## Most of the work is handled by the injectable rx service
+- ## Specific angular integration is handled by extensions on $rootScope
+- ## The $rootScope integration works, but its not necessarily concise
 
 ---
 
@@ -292,9 +307,9 @@ class: center, middle
 ---
 
 # Angular specific methods on observables
-- safeApply : makes sure $scope.$apply is called after function is finished
+- safeApply : makes sure $scope.$apply is called after an emitted value
 
-- safeDigest : makes sure $scope.$digest is called after function is finished
+- safeDigest : makes sure $scope.$digest is called after an emitted value
 
 ```javascript
     rx.Observable.from([0, 1, 2])
