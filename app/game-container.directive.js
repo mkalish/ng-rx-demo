@@ -6,7 +6,8 @@ export default class GameContainer {
                 <div>
                     <span>Left Score: {{vm.score.left}}</span>
                     <span>Right Score: {{vm.score.right}}</span>
-                    <button ng-click="vm.startGame()">Start Game</button>
+                    <button ng-hide="vm.started"  ng-click="vm.startGame()">Start Game</button>
+                    <button ng-show="vm.started" ng-click="vm.stopGame()">Stop Game</button>
                 </div>
                 <div class="container">
                     <key-move-item></key-move-item>
@@ -33,18 +34,28 @@ export default class GameContainer {
 
     controller($scope, rx) {
         var vm = this;
+        this.started = false;
         this.score = {
             left: 0,
             right: 0
         }
         this.startGame = startGame;
+        this.stopGame = stopGame;
         this.registerBall = registerBall;
         this.registerPaddle = registerPaddle;
         this.paddles = [];
 
-        ////
+        ////////
+
+        function stopGame() {
+            $scope.$broadcast('GAME_END');
+            vm.score = { left: 0, right: 0};
+            vm.started = false;
+        }
 
         function startGame() {
+            this.started = true;
+            this.ballOnGameStart();
             let game = rx.Observable.combineLatest(
                 ...this.paddles,
                 this.ballStream
@@ -81,8 +92,9 @@ export default class GameContainer {
             this.paddles.push(paddle);
         }
 
-        function registerBall(ballStream) {
+        function registerBall(ballStream, onGameStart) {
             this.ballStream = ballStream;
+            this.ballOnGameStart = onGameStart;
         }
 
         function isPaddleHit(paddlePos, ballPos) {

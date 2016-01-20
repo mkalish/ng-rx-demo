@@ -24,6 +24,7 @@ export default class Ball {
         let xDirection = 5;
         let yDirection = 5;
         let container = elem.parent()[0].getBoundingClientRect();
+        let gameEnd = scope.$eventToObservable('GAME_END');
 
 
         var moving = this.rx.Observable
@@ -76,30 +77,30 @@ export default class Ball {
                     };
                 }
                 return location;
+            })
+            .takeUntil(gameEnd);
+
+        gameController.registerBall(moving, () =>{
+            moving.subscribe(function(location){
+                elem.css({
+                    top: location.top + 'px',
+                    left: location.left + 'px'
+                });
+                switch(location.sideHit) {
+                    case 'top':
+                        yDirection = -1 * yDirection;
+                        break;
+                    case 'bottom':
+                        yDirection = -1 * yDirection;
+                        break;
+                    case 'left':
+                        xDirection = -1 * xDirection;
+                        break;
+                    case 'right':
+                        xDirection = -1 * xDirection;
+                        break;
+                }
             });
-
-        gameController.registerBall(moving);
-
-
-        moving.subscribe(function(location){
-            elem.css({
-                top: location.top + 'px',
-                left: location.left + 'px'
-            });
-            switch(location.sideHit) {
-                case 'top':
-                    yDirection = -1 * yDirection;
-                    break;
-                case 'bottom':
-                    yDirection = -1 * yDirection;
-                    break;
-                case 'left':
-                    xDirection = -1 * xDirection;
-                    break;
-                case 'right':
-                    xDirection = -1 * xDirection;
-                    break;
-            }
         });
     }
 }

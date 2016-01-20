@@ -71,6 +71,6 @@ export default class KeyMoveItem {
                 }
             });
 
-        gameContainer.registerPaddle(paddlePosition, 'right');
+        gameContainer.registerPaddle(paddlePosition, 'right', elem[0].getBoundingClientRect());
     }
 }

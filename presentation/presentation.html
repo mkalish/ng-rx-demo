@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Angular+RxJS</title>
+    <meta charset="utf-8">
+    <style>
+      @import url(https://fonts.googleapis.com/css?family=Yanone+Kaffeesatz);
+      @import url(https://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic);
+      @import url(https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,400italic);
+
+      body { font-family: 'Droid Serif'; }
+      h1, h2, h3 {
+        font-family: 'Yanone Kaffeesatz';
+        font-weight: normal;
+      }
+      .remark-code, .remark-inline-code { font-family: 'Ubuntu Mono'; }
+      blockquote {
+          background-color: lightgray;
+      }
+    </style>
+  </head>
+  <body>
+    <textarea id="source">
+
+class: center, middle
+
+# Introduction to RxJS in Angular 1
+### By:
+### Michael Kalish
+### Senior Software Engineer at Learning Objects
+### kalishmichael@gmail.com
+
+---
+
+# Agenda
+
+1. Who am I?
+2. What are Reactive Extensions?
+3. Properties of Observables
+4. Angular and RxJS
+5. Code Demo
+6. Topics for further exploration
+7. Alternatives
+
+---
+
+# Who am I?
+- Senior software engineer at Learning Objects building technology solutions to move education forward
+- I like building webapps and brewing beer
+
+---
+
+# What are Reactive Extensions?
+
+1. A new hair product
+2. The latest SNL sketch
+3. A new programming paradigm
+
+---
+
+# None of the above (sort of)!
+
+It is a programming paradigm, but its actually not that new
+
+---
+
+# Microsoft first announced Reactive extensions for .NET and Silverlight in 2009
+
+> The Rx library provides API create instances of these interfaces from scratch, convert existing asynchronous patterns such as events to these interfaces, query, transform and merge observables. All together creating a new powerful way of writing asynchronous applications.
+
+[Introduction Post](http://blogs.msdn.com/b/rxteam/archive/2009/11/17/announcing-reactive-extensions-rx-for-net-silverlight.aspx)
+
+---
+
+# The project was open sourced in 2012
+
+- A lot was included on top of the .NET version.  Microsoft also released RxJS and Rx++
+- Since then versions have been released for Ruby and Python
+- [Home of RX](https://rx.codeplex.com/)
+
+---
+
+# Really, its actually older than 2009
+
+At its core, Reactive Extensions is an implementation of the *Observer pattern* with a lot of synatic sugar on top of it.
+
+---
+
+# Wikipedia that
+
+> The observer pattern is a software design pattern in which an object, called the subject, maintains a list of its dependents, called observers, and notifies them automatically of any state changes, usually by calling one of their methods. It is mainly used to implement distributed event handling systems. The Observer pattern is also a key part in the familiar model–view–controller (MVC) architectural pattern.[1] The observer pattern is implemented in numerous programming libraries and systems, including almost all GUI toolkits.
+
+---
+
+# Extension of observer pattern
+- Two key enhancements
+    1. Ability for observer to signal when there is no more data
+    2. Ability for observer to signal when an error has ocurred
+
+---
+
+# Key features of Reactive Extensions
+
+- ## Unopiniated
+- ## Declarative
+- ## Composable
+
+---
+
+class: center, middle
+
+# __WARNING: THE FOLLOWING CODE SAMPLES INCLUDE ES2015__
+
+---
+
+class: center, middle
+
+# Properties of Observables
+
+---
+
+# Simple API
+
+```javascript
+    let simple = Rx.Observable.from([1,2,3]);
+    simple.subscribe(
+        (next) => {
+            console.log(next); // onNext event
+        },
+        () => {
+            console.log('ERROR'); // onError event
+        },
+        () => {
+            console.log('DONE'); // onComplete event
+        }
+    );
+
+    // 1
+    // 2
+    // 3
+    // DONE
+```
+
+---
+
+# Streams are lazy
+
+```javascript
+    let interval = Rx.Observable.interval(500)
+        .map(() => { console.log('TICK'); });
+    // Never fires until we have a subscription
+
+    interval.subscribe(
+        () => {
+            console.log('NEXT');
+        },
+        null,
+        () => {
+            console.log('COMPLETE');
+        }
+    );
+
+    // TICK
+    // NEXT
+    // TICK
+    // NEXT
+    // COMPLETE
+```
+---
+
+# Streams are immutable
+```javascript
+    let observable = Rx.Observable.from([0, 1, 2, 3]);
+    let filteredObservable = observable.filter((value) => { return value !== 2; });
+
+    observable.subscribe(
+        (value) => {
+            console.log(value);
+        },
+        null,
+        () => {
+            console.log('COMPLETE');
+        }
+    );
+    filteredObservable.subscribe(
+            (value) => {
+                console.log(value);
+            },
+            null,
+            () => {
+                console.log('COMPLETE');
+            }
+        );
+
+    // 0
+    // 0
+    // 1
+    // 1
+    // 2
+    // 3
+    // 3
+    // COMPLETE
+    // COMPLETE
+```
+
+---
+
+# Streams are composable
+```javascript
+    let zeroToFour = Rx.Observable.from([0, 1, 2, 3, 4]);
+    let abc = Rx.Observable.from(['a', 'b', 'c']);
+
+    let merged = zeroToFour
+        .merge(abc)
+        .filter((value) => {
+            return value !== 2 || value !== 'c';
+        })
+        .subscribe(
+            (value) =>{
+                console.log(value)
+            },
+            null,
+            () => {
+                console.log('COMPLETE');
+            }
+        );
+
+        // 0
+        // a
+        // 1
+        // b
+        // 3
+        // 4
+        // COMPLETE
+```
+
+---
+
+# Streams can emit streams
+
+```javascript
+    let issues = Rx.Observable
+        .from(['open', 'closed'])
+        .map((state) => {
+            return Rx.Observable.
+                fromPromise(
+                    fetch(`https://api.github.com/repos/Reactive-Extensions/rxjs/issues?state=${state}`)
+                );
+        })
+        .flatMap((response) => {
+            return response.data;
+        });
+
+    issues.subscribe((issuesList) => {
+        renderToDOM(issuesList);
+    });
+```
+
+---
+
+# Angular and RxJS
+- Very small API footprint
+- Most of the work is handled by injectable rx service
+
+---
+
+# Factories
+- rx : Contains all the functionality of RxJS
+- observeOnScope : factory to create streams based on changes on scope
+
+---
+
+# Angular specific methods on observables
+- safeApply : makes sure $scope.$apply is called after function is finished
+- safeDigest : makes sure $scope.$digest is called after function is finished
+
+```javascript
+    rx.Observable.from([0, 1, 2])
+        .filter((value) => {
+            return value === 2
+        })
+        .safeApply(() => {
+            this,
+            (value) => {
+                this.value = value;
+            }
+        })
+        .subscribe();
+```
+- identical to using the `do()` operator
+---
+
+# Methods added to $rootScope (and inherited down)
+- $createObservableFunction
+- $digestObservables
+- $eventToObservable
+- $toObservable
+
+---
+class: center, middle
+
+# The hardest part is to think Reactive
+
+---
+
+# Code Demo
+Lets build a simple (aka barely functional) game of pong
+
+---
+
+# Alternatives
+- [HighlandJS](http://highlandjs.org/)
+- [BaconJS](https://baconjs.github.io/)
+
+---
+# Resources
+1. [Getting started with operators](https://github.com/Reactive-Extensions/RxJS/blob/master/doc/gettingstarted/which-instance.md)
+2. **[A very solid gitbook chapter that walks through a network request](https://gist.github.com/staltz/868e7e9bc2a7b8c1f754)**
+3. [rx.angular.js](https://github.com/Reactive-Extensions/rx.angular.js)
+4. [Reactive Extension Github Page](https://github.com/Reactive-Extensions)
+5. [Presentation/Demo Code](https://github.com/mkalish/ng-rx-demo)
+6. [Rx Marbles](http://rxmarbles.com/)
+
+---
+
+class: center, middle
+
+# Questions?
+
+    </textarea>
+    <script src="https://gnab.github.io/remark/downloads/remark-latest.min.js">
+    </script>
+    <script>
+      var slideshow = remark.create();
+    </script>
+  </body>
+</html>
