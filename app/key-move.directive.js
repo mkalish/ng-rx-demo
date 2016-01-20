@@ -21,26 +21,35 @@ export default class KeyMoveItem {
             left: '300px'
         });
 
-        var upKeyDown = this.rx.Observable.fromEvent(document, 'keydown')
-            .filter(function(event){
+        // Observable keeping track of down arrow key down event
+        let upKeyDown = this.rx.Observable.fromEvent(document, 'keydown')
+            .filter((event) => {
                 return event.keyCode === 38;
             })
             .map(function(){
-                return {change: -10}
+                return -10;
             });
 
-        var downKeyUp = this.rx.Observable.fromEvent(document, 'keydown')
-            .filter(function(event){
+        // Observable keeping track of up arrow key down event
+        let downKeyDown = this.rx.Observable.fromEvent(document, 'keydown')
+            .filter((event) => {
                 return event.keyCode === 40;
             })
             .map(function(){
-                return {change: 10}
+                return 10;
             });
 
-        upKeyDown.merge(downKeyUp)
-            .subscribe(function(change){
-                var top = elem[0].getBoundingClientRect().top;
-                elem.css('top', (top + change.change) + 'px');
+        // Since the paddle is based on both observables,
+        // they are merged into one and used to calculate the new position
+        let movement = upKeyDown.merge(downKeyDown)
+            .map((changeInTop) => {
+                let currentTop = elem[0].getBoundingClientRect().top
+                return currentTop + changeInTop;
+            });
+
+        movement
+            .subscribe((newTop) => {
+                elem.css({ top: newTop + 'px'});
             });
     }
 }
