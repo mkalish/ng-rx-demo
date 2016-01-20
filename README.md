@@ -15,3 +15,5 @@ To run the sample app:
     npm install
     npm start
 ```
+
+Hit localhost:8080/ in your browser
